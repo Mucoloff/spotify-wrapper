@@ -29,27 +29,21 @@ public class SpotifyWebInterface {
         return get(accessToken, endpoint.getUrl());
     }
 
-    private static class ResponseCallback implements Callback {
-
-        private final CompletableFuture<String> future;
-
-        public ResponseCallback(CompletableFuture<String> future) {
-            this.future = future;
-        }
+    private record ResponseCallback(CompletableFuture<String> future) implements Callback {
 
         @Override
-        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            future.completeExceptionally(e);
-        }
-
-        @Override
-        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            if (!response.isSuccessful()) {
-                future.completeExceptionally(new IOException("Unexpected code " + response));
-                return;
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                future.completeExceptionally(e);
             }
 
-            future.complete(Objects.requireNonNull(response.body()).string());
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    future.completeExceptionally(new IOException("Unexpected code " + response));
+                    return;
+                }
+
+                future.complete(Objects.requireNonNull(response.body()).string());
+            }
         }
-    }
 }
