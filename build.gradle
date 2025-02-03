@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group = 'net.echo'
@@ -18,4 +19,17 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+java {
+    toolchain {
+        sourceCompatibility = '21'
+        targetCompatibility = '21'
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('Brain4J')
+    archiveClassifier.set('')
+    archiveVersion.set(version)
 }
