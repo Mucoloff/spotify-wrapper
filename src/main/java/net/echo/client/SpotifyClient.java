@@ -1,13 +1,11 @@
 package net.echo.client;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import net.echo.registry.EndpointRegistry;
 import net.echo.web.SpotifyWebInterface;
 import net.echo.wrapper.Queue;
-import net.echo.wrapper.Track;
+import net.echo.wrapper.track.Track;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class SpotifyClient {
@@ -34,11 +32,7 @@ public class SpotifyClient {
     public CompletableFuture<Track> getCurrentTrackAsync() {
         CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.CURRENTLY_PLAYING);
 
-        return response.thenApply(s -> {
-            JsonObject json = GSON.fromJson(s, JsonObject.class);
-
-            return GSON.fromJson(json.get("item").getAsJsonObject(), Track.class);
-        });
+        return response.thenApply(s -> GSON.fromJson(s, Track.class));
     }
 
     public Track getCurrentTrack() {
