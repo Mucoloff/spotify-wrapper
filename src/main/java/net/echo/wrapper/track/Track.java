@@ -16,6 +16,9 @@ public class Track {
     @SerializedName("progress_ms")
     private Integer progress;
 
+    @SerializedName("is_playing")
+    private boolean isPlaying;
+
     @SerializedName("item")
     private TrackItem item;
 
@@ -33,6 +36,10 @@ public class Track {
 
     public Integer getProgress() {
         return progress;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
     }
 
     public TrackItem getItem() {

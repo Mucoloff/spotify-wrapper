@@ -17,7 +17,7 @@ public class TrackItem {
     private Album album;
 
     @SerializedName("duration_ms")
-    public int durationMs;
+    private int durationMs;
 
     public String getTrackName() {
         return trackName;
