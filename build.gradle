@@ -29,7 +29,7 @@ java {
 }
 
 shadowJar {
-    archiveBaseName.set('Brain4J')
+    archiveBaseName.set('spotify-wrapper')
     archiveClassifier.set('')
     archiveVersion.set(version)
 }
