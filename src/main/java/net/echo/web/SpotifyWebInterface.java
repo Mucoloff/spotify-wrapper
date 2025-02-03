@@ -38,12 +38,16 @@ public class SpotifyWebInterface {
 
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            if (!response.isSuccessful()) {
+            if (!response.isSuccessful() || response.body() == null) {
                 future.completeExceptionally(new IOException("Unexpected code " + response));
                 return;
             }
 
-            future.complete(Objects.requireNonNull(response.body()).string());
+            String responseBody = response.body().string();
+
+            response.body().close();
+
+            future.complete(responseBody);
         }
     }
 }

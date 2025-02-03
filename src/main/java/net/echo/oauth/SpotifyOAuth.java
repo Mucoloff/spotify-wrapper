@@ -81,6 +81,8 @@ public class SpotifyOAuth {
             JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
             String accessToken = json.has("access_token") ? json.get("access_token").getAsString() : null;
 
+            response.body().close();
+
             if (accessToken != null) {
                 future.complete(accessToken);
             } else {
