@@ -7,9 +7,12 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+
+import static net.echo.client.SpotifyClient.GSON;
 
 public class SpotifyOAuth {
 
@@ -23,8 +26,8 @@ public class SpotifyOAuth {
         this.clientSecret = clientSecret;
     }
 
-    public CompletableFuture<String> getAccessToken(String code) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public CompletableFuture<AuthToken> getAccessToken(String code) {
+        CompletableFuture<AuthToken> future = new CompletableFuture<>();
 
         String endpoint = "https://accounts.spotify.com/api/token";
         String encodedAuth = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
@@ -47,12 +50,35 @@ public class SpotifyOAuth {
         return future;
     }
 
+    public CompletableFuture<AuthToken> refreshAccessToken(String refreshToken) {
+        CompletableFuture<AuthToken> future = new CompletableFuture<>();
+
+        String endpoint = "https://accounts.spotify.com/api/token";
+        String encodedAuth = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", refreshToken)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(endpoint)
+                .post(requestBody)
+                .addHeader("Authorization", "Basic " + encodedAuth)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+        SpotifyWebInterface.CLIENT.newCall(request).enqueue(new ResponseCallback(future));
+
+        return future;
+    }
+
     public String getAuthorizeUrl(String scope) {
         return "https://accounts.spotify.com/authorize" +
                 "?response_type=code" +
                 "&client_id=" + clientId +
                 "&redirect_uri=" + redirectUrl +
-                "&scope=" + scope;
+                "&scope=" + URLEncoder.encode(scope, StandardCharsets.UTF_8);
     }
 
     public String getClientId() {
@@ -63,7 +89,7 @@ public class SpotifyOAuth {
         return clientSecret;
     }
 
-    public record ResponseCallback(CompletableFuture<String> future) implements Callback {
+    public record ResponseCallback(CompletableFuture<AuthToken> future) implements Callback {
         @Override
         public void onFailure(@NotNull Call call, @NotNull IOException e) {
             future.completeExceptionally(e);
@@ -71,20 +97,25 @@ public class SpotifyOAuth {
 
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+            ResponseBody body = response.body();
+
+            if (body == null) {
+                future.completeExceptionally(new IOException("Response body is null"));
+                return;
+            }
+
+            String responseBody = body.string();
+            body.close();
+
             if (!response.isSuccessful()) {
                 future.completeExceptionally(new IOException("Unexpected code " + response));
                 return;
             }
 
-            String responseBody = Objects.requireNonNull(response.body()).string();
+            AuthToken token = GSON.fromJson(responseBody, AuthToken.class);
 
-            JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
-            String accessToken = json.has("access_token") ? json.get("access_token").getAsString() : null;
-
-            response.body().close();
-
-            if (accessToken != null) {
-                future.complete(accessToken);
+            if (token.getAccessToken() != null) {
+                future.complete(token);
             } else {
                 future.completeExceptionally(new IOException("Access token not found in response"));
             }

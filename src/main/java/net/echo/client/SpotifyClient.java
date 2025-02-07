@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class SpotifyClient {
 
-    private static final Gson GSON = new Gson();
+    public static final Gson GSON = new Gson();
 
     private String accessToken;
 
