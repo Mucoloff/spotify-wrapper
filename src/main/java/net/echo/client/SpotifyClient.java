@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import net.echo.registry.EndpointRegistry;
 import net.echo.web.SpotifyWebInterface;
 import net.echo.wrapper.Queue;
+import net.echo.wrapper.device.Devices;
 import net.echo.wrapper.playback.Playback;
 import net.echo.wrapper.track.Track;
 
@@ -44,6 +45,12 @@ public class SpotifyClient {
         CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.PLAYBACK, "", "");
 
         return response.thenApply(s -> GSON.fromJson(s, Playback.class));
+    }
+
+    public CompletableFuture<Devices> getDevices() {
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.DEVICES, "", "");
+
+        return response.thenApply(s -> GSON.fromJson(s, Devices.class));
     }
 
     public CompletableFuture<Queue> getQueue() {

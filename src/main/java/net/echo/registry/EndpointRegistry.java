@@ -2,7 +2,8 @@ package net.echo.registry;
 
 public enum EndpointRegistry {
 
-    PLAYBACK("/me/player/"),
+    DEVICES("/me/player/devices"),
+    PLAYBACK("/me/player"),
     CURRENTLY_PLAYING("/me/player/currently-playing"),
     PLAY("/me/player/play", Type.PUT),
     PAUSE("/me/player/pause", Type.PUT),

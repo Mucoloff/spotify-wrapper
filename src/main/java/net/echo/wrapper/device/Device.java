@@ -1,4 +1,4 @@
-package net.echo.wrapper.playback;
+package net.echo.wrapper.device;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;

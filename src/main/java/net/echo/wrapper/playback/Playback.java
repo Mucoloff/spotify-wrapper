@@ -3,6 +3,7 @@ package net.echo.wrapper.playback;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.ToString;
+import net.echo.wrapper.device.Device;
 import net.echo.wrapper.track.TrackItem;
 
 @Getter
