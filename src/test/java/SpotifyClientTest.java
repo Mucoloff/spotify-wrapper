@@ -1,9 +1,16 @@
 import net.echo.client.SpotifyClient;
+import net.echo.wrapper.playback.Playback;
 import net.echo.wrapper.track.Track;
+import net.echo.wrapper.track.TrackItem;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

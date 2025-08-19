@@ -1,10 +1,14 @@
 package net.echo.wrapper.track;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.ToString;
 import net.echo.wrapper.Album;
 import net.echo.wrapper.Artist;
 import net.echo.wrapper.Image;
 
+@Getter
+@ToString
 public class TrackItem {
 
     @SerializedName("name")
@@ -19,13 +23,9 @@ public class TrackItem {
     @SerializedName("duration_ms")
     private int durationMs;
 
-    public String getTrackName() {
-        return trackName;
-    }
+    @SerializedName("uri")
+    private String uri;
 
-    public Artist[] getArtists() {
-        return artists;
-    }
 
     public Image[] getImages() {
         if (album != null) {
@@ -35,7 +35,4 @@ public class TrackItem {
         return null;
     }
 
-    public int getDurationMs() {
-        return durationMs;
-    }
 }

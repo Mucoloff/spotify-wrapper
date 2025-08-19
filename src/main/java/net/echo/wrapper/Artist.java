@@ -1,15 +1,14 @@
 package net.echo.wrapper;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.ToString;
 
+@Getter
 public class Artist {
 
     @SerializedName("name")
     private String name;
-
-    public String getName() {
-        return name;
-    }
 
     @Override
     public String toString() {
