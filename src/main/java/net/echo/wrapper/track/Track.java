@@ -3,10 +3,14 @@ package net.echo.wrapper.track;
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.ToString;
+import net.echo.wrapper.device.Device;
 
 @Getter
 @ToString
 public class Track {
+
+    @SerializedName("device")
+    private Device device;
 
     @SerializedName("repeat_state")
     private String repeat;
