@@ -96,7 +96,7 @@ public class SpotifyClient {
 
     public CompletableFuture<Boolean> seekToTime(String deviceId, String position_ms) {
         String url = deviceId != null && !deviceId.isEmpty() ? ("&device_id=" + deviceId) : "";
-        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.ADD_QUEUE, "?position_ms=" + position_ms + url, "");
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.SEEK, "?position_ms=" + position_ms + url, "");
 
         return response.thenApply(String::isEmpty);
     }
