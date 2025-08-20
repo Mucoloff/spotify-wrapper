@@ -7,6 +7,7 @@ public enum EndpointRegistry {
     CURRENTLY_PLAYING("/me/player/currently-playing"),
     PLAY("/me/player/play", Type.PUT),
     PAUSE("/me/player/pause", Type.PUT),
+    SEEK("/me/player/seek", Type.PUT),
     SKIP_NEXT("/me/player/next", Type.POST),
     SKIP_PREVIOUS("/me/player/previous", Type.POST),
     QUEUE("/me/player/queue"),
