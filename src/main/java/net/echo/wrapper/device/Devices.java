@@ -1,4 +1,4 @@
-package net.echo.wrapper;
+package net.echo.wrapper.device;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
@@ -6,10 +6,8 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class Album {
-
-    @SerializedName("images")
-    private Image[] images;
-
+public class Devices {
+    @SerializedName("devices")
+    private Device[] devices;
 
 }

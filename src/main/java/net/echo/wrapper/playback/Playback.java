@@ -1,13 +1,14 @@
-package net.echo.wrapper.track;
+package net.echo.wrapper.playback;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.ToString;
 import net.echo.wrapper.device.Device;
+import net.echo.wrapper.track.TrackItem;
 
 @Getter
 @ToString
-public class Track {
+public class Playback {
 
     @SerializedName("device")
     private Device device;
@@ -17,6 +18,9 @@ public class Track {
 
     @SerializedName("shuffle_state")
     private boolean shuffle;
+
+    @SerializedName("context")
+    private PlaybackContext context;
 
     @SerializedName("timestamp")
     private long timestamp;
@@ -29,6 +33,12 @@ public class Track {
 
     @SerializedName("item")
     private TrackItem item;
+
+    @SerializedName("currently_playing_type")
+    private String type;
+
+    @SerializedName("smart_shuffle")
+    private boolean smartShuffle;
 
 
 }

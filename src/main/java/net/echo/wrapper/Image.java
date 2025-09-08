@@ -1,15 +1,13 @@
 package net.echo.wrapper;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
 
+@Getter
 public class Image {
 
     @SerializedName("url")
     private String url;
-
-    public String getUrl() {
-        return url;
-    }
 
     @Override
     public String toString() {

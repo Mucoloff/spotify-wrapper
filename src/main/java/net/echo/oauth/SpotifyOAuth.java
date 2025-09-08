@@ -1,10 +1,10 @@
 package net.echo.oauth;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.echo.web.SpotifyWebInterface;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -20,6 +20,8 @@ public class SpotifyOAuth {
     private final String clientId;
     private final String clientSecret;
 
+    private static final HttpClient http = HttpClient.newHttpClient();
+
     public SpotifyOAuth(String redirectUrl, String clientId, String clientSecret) {
         this.redirectUrl = redirectUrl;
         this.clientId = clientId;
@@ -32,20 +34,18 @@ public class SpotifyOAuth {
         String endpoint = "https://accounts.spotify.com/api/token";
         String encodedAuth = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
 
-        RequestBody requestBody = new FormBody.Builder()
-                .add("grant_type", "authorization_code")
-                .add("code", code)
-                .add("redirect_uri", redirectUrl)
+        String form = "grant_type=authorization_code" +
+                "&code=" + URLEncoder.encode(code, StandardCharsets.UTF_8) +
+                "&redirect_uri=" + URLEncoder.encode(redirectUrl, StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Authorization", "Basic " + encodedAuth)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(form))
                 .build();
 
-        Request request = new Request.Builder()
-                .url(endpoint)
-                .post(requestBody)
-                .addHeader("Authorization", "Basic " + encodedAuth)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .build();
-
-        SpotifyWebInterface.CLIENT.newCall(request).enqueue(new ResponseCallback(future));
+        sendRequest(request, future);
 
         return future;
     }
@@ -56,19 +56,17 @@ public class SpotifyOAuth {
         String endpoint = "https://accounts.spotify.com/api/token";
         String encodedAuth = Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes(StandardCharsets.UTF_8));
 
-        RequestBody requestBody = new FormBody.Builder()
-                .add("grant_type", "refresh_token")
-                .add("refresh_token", refreshToken)
+        String form = "grant_type=refresh_token" +
+                "&refresh_token=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Authorization", "Basic " + encodedAuth)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(form))
                 .build();
 
-        Request request = new Request.Builder()
-                .url(endpoint)
-                .post(requestBody)
-                .addHeader("Authorization", "Basic " + encodedAuth)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .build();
-
-        SpotifyWebInterface.CLIENT.newCall(request).enqueue(new ResponseCallback(future));
+        sendRequest(request, future);
 
         return future;
     }
@@ -89,36 +87,26 @@ public class SpotifyOAuth {
         return clientSecret;
     }
 
-    public record ResponseCallback(CompletableFuture<AuthToken> future) implements Callback {
-        @Override
-        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            future.completeExceptionally(e);
-        }
-
-        @Override
-        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            ResponseBody body = response.body();
-
-            if (body == null) {
-                future.completeExceptionally(new IOException("Response body is null"));
-                return;
-            }
-
-            String responseBody = body.string();
-            body.close();
-
-            if (!response.isSuccessful()) {
-                future.completeExceptionally(new IOException("Unexpected code " + response));
-                return;
-            }
-
-            AuthToken token = GSON.fromJson(responseBody, AuthToken.class);
-
-            if (token.getAccessToken() != null) {
-                future.complete(token);
-            } else {
-                future.completeExceptionally(new IOException("Access token not found in response"));
-            }
-        }
+    private void sendRequest(HttpRequest request, CompletableFuture<AuthToken> future) {
+        http.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() != 200) {
+                        throw new RuntimeException("Unexpected status code: " + response.statusCode() + " body: " + response.body());
+                    }
+                    return response.body();
+                })
+                .thenAccept(body -> {
+                    AuthToken token = GSON.fromJson(body, AuthToken.class);
+                    if (token != null && token.getAccessToken() != null) {
+                        future.complete(token);
+                    } else {
+                        future.completeExceptionally(new IOException("Access token not found in response: " + body));
+                    }
+                })
+                .exceptionally(ex -> {
+                    future.completeExceptionally(ex);
+                    return null;
+                });
     }
+
 }

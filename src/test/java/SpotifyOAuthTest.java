@@ -9,7 +9,8 @@ import java.net.InetSocketAddress;
 
 public class SpotifyOAuthTest {
 
-    private final String callback = "http://localhost:31415/callback";
+    private final int port = 8000;
+    private final String callback = "http://127.0.0.1:%s/callback".formatted(port);
     private final String clientId = "<YOUR-CLIENT-ID>";
     private final String clientSecret = "<YOUR-CLIENT-SECRET>";
     private final SpotifyOAuth spotifyOAuth = new SpotifyOAuth(callback, clientId, clientSecret);
@@ -27,7 +28,7 @@ public class SpotifyOAuthTest {
     }
 
     public void startServer() throws IOException {
-        HttpServer server = HttpServer.create(new InetSocketAddress(31415), 0);
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         server.createContext("/callback", exchange -> {
             String query = exchange.getRequestURI().getQuery();

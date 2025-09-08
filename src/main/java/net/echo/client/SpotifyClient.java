@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import net.echo.registry.EndpointRegistry;
 import net.echo.web.SpotifyWebInterface;
 import net.echo.wrapper.Queue;
+import net.echo.wrapper.device.Devices;
+import net.echo.wrapper.playback.Playback;
 import net.echo.wrapper.track.Track;
 
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +32,7 @@ public class SpotifyClient {
     }
 
     public CompletableFuture<Track> getCurrentTrackAsync() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.CURRENTLY_PLAYING);
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.CURRENTLY_PLAYING, "", "");
 
         return response.thenApply(s -> GSON.fromJson(s, Track.class));
     }
@@ -39,39 +41,62 @@ public class SpotifyClient {
         return getCurrentTrackAsync().join();
     }
 
+    public CompletableFuture<Playback> getPlayBack() {
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.PLAYBACK, "", "");
+
+        return response.thenApply(s -> GSON.fromJson(s, Playback.class));
+    }
+
+    public CompletableFuture<Devices> getDevices() {
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.DEVICES, "", "");
+
+        return response.thenApply(s -> GSON.fromJson(s, Devices.class));
+    }
+
     public CompletableFuture<Queue> getQueue() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.QUEUE);
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.QUEUE, "", "");
 
         return response.thenApply(s -> GSON.fromJson(s, Queue.class));
     }
 
-    public CompletableFuture<Boolean> play() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.PLAY);
+    public CompletableFuture<Boolean> play(String deviceId, String body) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("?device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.PLAY, url, body);
 
         return response.thenApply(String::isEmpty);
     }
 
-    public CompletableFuture<Boolean> pause() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.PAUSE);
+    public CompletableFuture<Boolean> pause(String deviceId) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("?device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.PAUSE, url, "");
 
         return response.thenApply(String::isEmpty);
     }
 
-    public CompletableFuture<Boolean> skipNext() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.SKIP_NEXT);
+    public CompletableFuture<Boolean> skipNext(String deviceId) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("?device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.SKIP_NEXT, url, "");
 
         return response.thenApply(String::isEmpty);
     }
 
-    public CompletableFuture<Boolean> skipPrevious() {
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, EndpointRegistry.SKIP_PREVIOUS);
+    public CompletableFuture<Boolean> skipPrevious(String deviceId) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("?device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.SKIP_PREVIOUS, url, "");
 
         return response.thenApply(String::isEmpty);
     }
 
-    public CompletableFuture<Boolean> addToQueue(String trackUri) {
-        String url = EndpointRegistry.QUEUE.getUrl() + "?uri=" + trackUri;
-        CompletableFuture<String> response = SpotifyWebInterface.get(accessToken, url);
+    public CompletableFuture<Boolean> addToQueue(String deviceId, String trackUri) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("&device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.ADD_QUEUE, "?uri=" + trackUri.replace(":", "%3A") + url, "");
+
+        return response.thenApply(String::isEmpty);
+    }
+
+    public CompletableFuture<Boolean> seekToTime(String deviceId, String position_ms) {
+        String url = deviceId != null && !deviceId.isEmpty() ? ("&device_id=" + deviceId) : "";
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.SEEK, "?position_ms=" + position_ms + url, "");
 
         return response.thenApply(String::isEmpty);
     }

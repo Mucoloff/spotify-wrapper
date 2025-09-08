@@ -1,53 +1,43 @@
 package net.echo.web;
 
 import net.echo.registry.EndpointRegistry;
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 
 public class SpotifyWebInterface {
 
-    public static final OkHttpClient CLIENT = new OkHttpClient();
+    private static final HttpClient http = HttpClient.newHttpClient();
 
-    public static CompletableFuture<String> get(String accessToken, String endpoint) {
-        CompletableFuture<String> future = new CompletableFuture<>();
+    public static CompletableFuture<String> request(String accessToken, EndpointRegistry endpointRegistry, String url, String body) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(endpointRegistry.getUrl() + url))
+                .header("Authorization", "Bearer " + accessToken);
 
-        Request request = new Request.Builder()
-                .url(endpoint)
-                .addHeader("Authorization", "Bearer " + accessToken)
-                .build();
+        HttpRequest.Builder b = switch (endpointRegistry.getType()) {
+            case GET -> builder.GET();
+            case DELETE ->
+                    body != null && !body.isEmpty() ? builder.method("DELETE", HttpRequest.BodyPublishers.ofString(body)) : builder.DELETE();
+            case POST ->
+                    body != null && !body.isEmpty() ? builder.POST(HttpRequest.BodyPublishers.ofString(body)) : builder.POST(HttpRequest.BodyPublishers.noBody());
+            case PUT ->
+                    body != null && !body.isEmpty() ? builder.header("Content-Type", "application/json").PUT(HttpRequest.BodyPublishers.ofString(body)) : builder.PUT(HttpRequest.BodyPublishers.noBody());
+        };
 
-        CLIENT.newCall(request).enqueue(new ResponseCallback(future));
+        HttpRequest request = b.build();
 
-        return future;
-    }
-
-    public static CompletableFuture<String> get(String accessToken, EndpointRegistry endpoint) {
-        return get(accessToken, endpoint.getUrl());
-    }
-
-    private record ResponseCallback(CompletableFuture<String> future) implements Callback {
-
-        @Override
-        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-            future.completeExceptionally(e);
-        }
-
-        @Override
-        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            if (!response.isSuccessful() || response.body() == null) {
-                future.completeExceptionally(new IOException("Unexpected code " + response));
-                return;
-            }
-
-            String responseBody = response.body().string();
-
-            response.body().close();
-
-            future.complete(responseBody);
-        }
+        return http.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenCompose(response -> {
+                    if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                        return CompletableFuture.failedFuture(
+                                new IOException("Unexpected status code: " + response.statusCode() + " body: " + response.body())
+                        );
+                    }
+                    return CompletableFuture.completedFuture(response.body());
+                });
     }
 }
