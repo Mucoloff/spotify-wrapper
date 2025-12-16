@@ -7,30 +7,22 @@ import dev.sweety.spotify.model.device.Devices;
 import dev.sweety.spotify.model.playback.Playback;
 import dev.sweety.spotify.model.track.Track;
 import dev.sweety.spotify.registry.EndpointRegistry;
-import dev.sweety.persistence.config.GsonUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.concurrent.CompletableFuture;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SpotifyClient {
 
-    public static final Gson GSON = GsonUtils.gson();
+    public static final Gson GSON = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private String accessToken;
-
-    public SpotifyClient() {
-    }
-
-    public SpotifyClient(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
 
     public CompletableFuture<Track> getCurrentTrackAsync() {
         CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.CURRENTLY_PLAYING, "", "");
@@ -100,5 +92,10 @@ public class SpotifyClient {
         CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, EndpointRegistry.SEEK, "?position_ms=" + position_ms + url, "");
 
         return response.thenApply(String::isEmpty);
+    }
+
+    public <T> CompletableFuture<T> get(Class<T> clazz, String url, String body, EndpointRegistry.Type type) {
+        CompletableFuture<String> response = SpotifyWebInterface.request(accessToken, type, url, body);
+        return response.thenApply(s -> GSON.fromJson(s, clazz));
     }
 }

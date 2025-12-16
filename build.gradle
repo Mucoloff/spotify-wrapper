@@ -4,8 +4,8 @@ plugins {
     id 'io.freefair.lombok' version '8.6'
 }
 
-group = 'net.echo'
-version = '1.3'
+group = 'dev.sweety'
+version = '1.6'
 
 repositories {
     mavenCentral()

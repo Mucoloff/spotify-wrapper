@@ -1,5 +1,7 @@
 package dev.sweety.spotify.registry;
 
+import lombok.Getter;
+
 public enum EndpointRegistry {
 
     DEVICES("/me/player/devices"),
@@ -15,6 +17,7 @@ public enum EndpointRegistry {
 
     public static final String BASE_URL = "https://api.spotify.com/v1";
     private final String endpoint;
+    @Getter
     private final Type type;
 
     EndpointRegistry(String endpoint, Type type) {
@@ -28,10 +31,6 @@ public enum EndpointRegistry {
 
     public String getUrl() {
         return endpoint;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public enum Type {

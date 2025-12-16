@@ -13,12 +13,12 @@ public class SpotifyWebInterface {
 
     private static final HttpClient http = HttpClient.newHttpClient();
 
-    public static CompletableFuture<String> request(String accessToken, EndpointRegistry endpointRegistry, String url, String body) {
+    public static CompletableFuture<String> request(String accessToken, EndpointRegistry.Type type, String url, String body) {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(endpointRegistry.getUrl() + url))
+                .uri(URI.create(url))
                 .header("Authorization", "Bearer " + accessToken);
 
-        HttpRequest.Builder b = switch (endpointRegistry.getType()) {
+        HttpRequest.Builder b = switch (type) {
             case GET -> builder.GET();
             case DELETE ->
                     body != null && !body.isEmpty() ? builder.method("DELETE", HttpRequest.BodyPublishers.ofString(body)) : builder.DELETE();
@@ -39,5 +39,9 @@ public class SpotifyWebInterface {
                     }
                     return CompletableFuture.completedFuture(response.body());
                 });
+    }
+
+    public static CompletableFuture<String> request(String accessToken, EndpointRegistry endpointRegistry, String url, String body) {
+        return request(accessToken, endpointRegistry.getType(), endpointRegistry.getUrl() + url, body);
     }
 }
