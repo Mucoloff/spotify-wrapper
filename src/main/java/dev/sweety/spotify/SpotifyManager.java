@@ -5,6 +5,7 @@ import dev.sweety.spotify.auth.AuthToken;
 import dev.sweety.spotify.auth.SpotifyOAuth;
 import dev.sweety.spotify.client.SpotifyClient;
 import dev.sweety.spotify.util.StopWatch;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
@@ -34,6 +35,7 @@ public class SpotifyManager {
     private final StopWatch lastUpdate = new StopWatch();
 
     @Setter
+    @Getter
     private String refreshToken;
 
     @Setter
