@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import dev.sweety.spotify.auth.AuthToken;
 import dev.sweety.spotify.auth.SpotifyOAuth;
 import dev.sweety.spotify.client.SpotifyClient;
+import dev.sweety.spotify.util.OperatingSystem;
 import dev.sweety.spotify.util.StopWatch;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,10 +38,6 @@ public class SpotifyManager {
     @Setter
     @Getter
     private String refreshToken;
-
-    @Setter
-    private Consumer<URL> open = url -> {
-    };
 
     @Setter
     private BiConsumer<String, Object[]> info = (format, args) -> {
@@ -141,7 +138,7 @@ public class SpotifyManager {
         String url = this.oAuth.getAuthorizeUrl("user-read-playback-state user-read-email");
 
         try {
-            open.accept(new URL(url));
+            OperatingSystem.detectOS().open(new URL(url));
         } catch (Exception e) {
             e.printStackTrace();
         }
