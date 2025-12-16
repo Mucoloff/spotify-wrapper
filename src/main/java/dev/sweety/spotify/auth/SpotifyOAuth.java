@@ -1,26 +1,25 @@
-package net.echo.oauth;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+package dev.sweety.spotify.auth;
 
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.concurrent.CompletableFuture;
 
-import static net.echo.client.SpotifyClient.GSON;
+import static dev.sweety.spotify.client.SpotifyClient.GSON;
+
 
 public class SpotifyOAuth {
 
+    private static final HttpClient http = HttpClient.newHttpClient();
     private final String redirectUrl;
     private final String clientId;
     private final String clientSecret;
-
-    private static final HttpClient http = HttpClient.newHttpClient();
 
     public SpotifyOAuth(String redirectUrl, String clientId, String clientSecret) {
         this.redirectUrl = redirectUrl;

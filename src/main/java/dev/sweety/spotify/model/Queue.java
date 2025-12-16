@@ -1,10 +1,10 @@
-package net.echo.wrapper;
+package dev.sweety.spotify.model;
 
 import com.google.gson.annotations.SerializedName;
+import dev.sweety.spotify.model.track.Track;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import net.echo.wrapper.track.Track;
 
 @Setter
 @Getter

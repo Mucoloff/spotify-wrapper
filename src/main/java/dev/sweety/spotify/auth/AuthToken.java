@@ -1,4 +1,4 @@
-package net.echo.oauth;
+package dev.sweety.spotify.auth;
 
 import com.google.gson.annotations.SerializedName;
 

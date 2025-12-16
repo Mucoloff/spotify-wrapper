@@ -1,11 +1,11 @@
-package net.echo.wrapper.track;
+package dev.sweety.spotify.model.track;
 
 import com.google.gson.annotations.SerializedName;
+import dev.sweety.spotify.model.Album;
+import dev.sweety.spotify.model.Artist;
+import dev.sweety.spotify.model.Image;
 import lombok.Getter;
 import lombok.ToString;
-import net.echo.wrapper.Album;
-import net.echo.wrapper.Artist;
-import net.echo.wrapper.Image;
 
 @Getter
 @ToString

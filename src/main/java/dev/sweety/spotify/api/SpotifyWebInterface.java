@@ -1,6 +1,6 @@
-package net.echo.web;
+package dev.sweety.spotify.api;
 
-import net.echo.registry.EndpointRegistry;
+import dev.sweety.spotify.registry.EndpointRegistry;
 
 import java.io.IOException;
 import java.net.URI;

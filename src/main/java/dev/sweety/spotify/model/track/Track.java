@@ -1,14 +1,13 @@
-package net.echo.wrapper.playback;
+package dev.sweety.spotify.model.track;
 
 import com.google.gson.annotations.SerializedName;
+import dev.sweety.spotify.model.device.Device;
 import lombok.Getter;
 import lombok.ToString;
-import net.echo.wrapper.device.Device;
-import net.echo.wrapper.track.TrackItem;
 
 @Getter
 @ToString
-public class Playback {
+public class Track {
 
     @SerializedName("device")
     private Device device;
@@ -18,9 +17,6 @@ public class Playback {
 
     @SerializedName("shuffle_state")
     private boolean shuffle;
-
-    @SerializedName("context")
-    private PlaybackContext context;
 
     @SerializedName("timestamp")
     private long timestamp;
@@ -33,12 +29,6 @@ public class Playback {
 
     @SerializedName("item")
     private TrackItem item;
-
-    @SerializedName("currently_playing_type")
-    private String type;
-
-    @SerializedName("smart_shuffle")
-    private boolean smartShuffle;
 
 
 }

@@ -1,4 +1,4 @@
-package net.echo.wrapper.playback;
+package dev.sweety.spotify.model.playback;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;

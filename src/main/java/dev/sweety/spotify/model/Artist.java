@@ -1,16 +1,16 @@
-package net.echo.wrapper;
+package dev.sweety.spotify.model;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 
 @Getter
-public class Image {
+public class Artist {
 
-    @SerializedName("url")
-    private String url;
+    @SerializedName("name")
+    private String name;
 
     @Override
     public String toString() {
-        return url;
+        return name;
     }
 }

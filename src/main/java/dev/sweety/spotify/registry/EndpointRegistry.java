@@ -1,4 +1,4 @@
-package net.echo.registry;
+package dev.sweety.spotify.registry;
 
 public enum EndpointRegistry {
 

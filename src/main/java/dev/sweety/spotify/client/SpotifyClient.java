@@ -1,18 +1,19 @@
-package net.echo.client;
+package dev.sweety.spotify.client;
 
 import com.google.gson.Gson;
-import net.echo.registry.EndpointRegistry;
-import net.echo.web.SpotifyWebInterface;
-import net.echo.wrapper.Queue;
-import net.echo.wrapper.device.Devices;
-import net.echo.wrapper.playback.Playback;
-import net.echo.wrapper.track.Track;
+import dev.sweety.spotify.api.SpotifyWebInterface;
+import dev.sweety.spotify.model.Queue;
+import dev.sweety.spotify.model.device.Devices;
+import dev.sweety.spotify.model.playback.Playback;
+import dev.sweety.spotify.model.track.Track;
+import dev.sweety.spotify.registry.EndpointRegistry;
+import dev.sweety.persistence.config.GsonUtils;
 
 import java.util.concurrent.CompletableFuture;
 
 public class SpotifyClient {
 
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = GsonUtils.gson();
 
     private String accessToken;
 
@@ -23,12 +24,12 @@ public class SpotifyClient {
         this.accessToken = accessToken;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
     public String getAccessToken() {
         return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public CompletableFuture<Track> getCurrentTrackAsync() {

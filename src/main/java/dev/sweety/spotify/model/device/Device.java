@@ -1,4 +1,4 @@
-package net.echo.wrapper.device;
+package dev.sweety.spotify.model.device;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
