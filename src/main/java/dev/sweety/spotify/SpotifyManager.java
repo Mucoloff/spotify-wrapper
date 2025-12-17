@@ -24,9 +24,11 @@ import java.util.function.Consumer;
 public class SpotifyManager {
 
     private final int port;
+    private final String redirectUrl;
 
-    public SpotifyManager(String callback, int port, String clientId, String clientSecret) {
+    public SpotifyManager(String callback, int port, String clientId, String clientSecret, String redirectUrl) {
         this.port = port;
+        this.redirectUrl = redirectUrl;
         this.oAuth = new SpotifyOAuth(callback, clientId, clientSecret);
     }
 
@@ -73,7 +75,7 @@ public class SpotifyManager {
                 String query = exchange.getRequestURI().getQuery();
                 String code = query.split("code=")[1];
 
-                String response = loadResource("callback/spotify.html");
+                String response = loadResource(this.redirectUrl);
 
                 byte[] bytes = response.getBytes();
                 exchange.sendResponseHeaders(200, bytes.length);
