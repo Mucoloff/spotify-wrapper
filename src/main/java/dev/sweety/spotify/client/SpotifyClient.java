@@ -1,6 +1,7 @@
 package dev.sweety.spotify.client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import dev.sweety.spotify.api.SpotifyWebInterface;
 import dev.sweety.spotify.model.Queue;
 import dev.sweety.spotify.model.device.Devices;
@@ -20,7 +21,10 @@ import java.util.concurrent.CompletableFuture;
 @AllArgsConstructor
 public class SpotifyClient {
 
-    public static final Gson GSON = new Gson().newBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .disableHtmlEscaping()
+            .create();
 
     private String accessToken;
 
